@@ -153,6 +153,10 @@ function updateLegend(flossCounts, pattern) {
         // element.style.color = hexDarker(flossCodes[l].color)
 
         element.addEventListener('click', function() {
+            const highlightBorders = document.getElementsByClassName('border');
+            while(highlightBorders.length > 0){
+                highlightBorders[0].parentNode.removeChild(highlightBorders[0]);
+            }
             console.log(this)
             if (!selected) {
                 selected = l
@@ -166,16 +170,25 @@ function updateLegend(flossCounts, pattern) {
                     el = els[j]
                     if (![...el.classList].includes(`floss${l}`)) {
                         el.style.opacity = 0.25
+                    } else {
+                        let border = document.createElementNS(svgns,'rect')
+                        border.setAttribute('class', 'border')
+                        border.setAttribute('stroke', 'black')
+                        border.setAttribute('stroke-width', '2px')
+                        border.setAttribute('fill', 'none')
+                        border.setAttribute('width', `${sqWidth}`);
+                        border.setAttribute('height', `${sqWidth}`);
+                        el.append(border)
                     }
                 }
 
-                els = document.getElementsByClassName('legendItem')
-                for (let j = 0; j < els.length; j++) {
-                    el = els[j]
-                    if (![...el.classList].includes(`floss${l}`)) {
-                        el.style.opacity = 0.25
-                    }
-                }
+                // els = document.getElementsByClassName('legendItem')
+                // for (let j = 0; j < els.length; j++) {
+                //     el = els[j]
+                //     if (![...el.classList].includes(`floss${l}`)) {
+                //         el.style.opacity = 0.25
+                //     }
+                // }
 
             } else {
                 selected = null
@@ -183,10 +196,10 @@ function updateLegend(flossCounts, pattern) {
                 for (let j = 0; j < els.length; j++) {
                     els[j].style.opacity = 1
                 }
-                els = document.getElementsByClassName('legendItem')
-                for (let j = 0; j < els.length; j++) {
-                    els[j].style.opacity = 1
-                }
+                // els = document.getElementsByClassName('legendItem')
+                // for (let j = 0; j < els.length; j++) {
+                //     els[j].style.opacity = 1
+                // }
             }
             updateLegend(flossCounts, pattern);
         })
@@ -194,108 +207,9 @@ function updateLegend(flossCounts, pattern) {
     })
 
     
-
-    console.log(legend)
-
-//                  <li><a class="dropdown-item" href="#">Action</a></li>
-
-
-    
-
-
-    //legend.
 }
 
-function createLegend_OLD(flossCounts) {
-    
 
-    
-
-
-    console.log(flossCounts)
-    flossLegendOrder = Object.keys(flossCounts).sort((a, b) => flossCounts[b] - flossCounts[a])
-
-    let nLegendItems = Object.keys(flossCounts).length
-    let legendItemHeight = window.innerHeight / nLegendItems - 10
-    legend.style.width = `${2*legendItemHeight + 20}px`;
-
-    flossLegendOrder.forEach((l, i) => {
-        let element = document.createElement('div');
-        element.className = `legendItem floss${l}`;
-        element.style.backgroundColor = flossCodes[l].color
-        element.style.color = hexDarker(flossCodes[l].color)
-        element.style.left = `10px`;
-        // element.style.top = `${5 + i*(legendItemHeight+10)}px`;
-        element.style.height = `${legendItemHeight}px`;
-        element.style.width = `${2*legendItemHeight}px`;
-        element.style.fontSize = `${0.4*legendItemHeight}px`;
-        element.innerText = `${l} ${flossCodes[l].symbol}`
-        element.addEventListener('click', function(event) {
-            event.stopPropagation()
-            console.log(this)
-            if (!selected) {
-                selected = l
-                let minX = pattern.filter(x => x.color.code == l).map(x => x.x).reduce((a, b) => a < b ? a : b)
-                let maxX = pattern.filter(x => x.color.code == l).map(x => x.x).reduce((a, b) => a > b ? a : b)
-                let minY = pattern.filter(x => x.color.code == l).map(x => x.y).reduce((a, b) => a < b ? a : b)
-                let maxY = pattern.filter(x => x.color.code == l).map(x => x.y).reduce((a, b) => a > b ? a : b)
-                zoom(minX, maxX, minY, maxY)
-                els = document.getElementsByClassName('cell')
-                for (let j = 0; j < els.length; j++) {
-                    el = els[j]
-                    if (![...el.classList].includes(`floss${l}`)) {
-                        el.style.opacity = 0.25
-                    }
-                }
-
-                els = document.getElementsByClassName('legendItem')
-                for (let j = 0; j < els.length; j++) {
-                    el = els[j]
-                    if (![...el.classList].includes(`floss${l}`)) {
-                        el.style.opacity = 0.25
-                    }
-                }
-
-            } else {
-                selected = null
-                els = document.getElementsByClassName('cell')
-                for (let j = 0; j < els.length; j++) {
-                    els[j].style.opacity = 1
-                }
-                els = document.getElementsByClassName('legendItem')
-                for (let j = 0; j < els.length; j++) {
-                    els[j].style.opacity = 1
-                }
-            }
-        })
-        legend.append(element);
-    })
-    
-}
-
-// function updateLegend() {
-
-// }
-
-function updateLegend_OLD() {
-    let legend = document.getElementById('legend')
-    let legendItems = document.getElementsByClassName('legendItem');
-    let nLegendItems = legendItems.length
-    if (window.innerHeight > window.innerWidth) {
-        legend.style.bottom = '0'
-        legend.style.width = '100%'
-    } else {
-        let legendItemHeight = window.innerHeight / nLegendItems - 10;
-        legend.style.width = `${2*legendItemHeight + 20}px`;
-        for (let i = 0; i < legendItems.length; i++) {
-            legendItems[i].style.height = `${legendItemHeight}px`;
-            legendItems[i].style.width = `${2*legendItemHeight}px`;
-            legendItems[i].style.fontSize = `${0.4*legendItemHeight}px`;
-
-        }
-
-    }
-}
 
 function zoom(minX, maxX, minY, maxY) {
     let duration = 500
